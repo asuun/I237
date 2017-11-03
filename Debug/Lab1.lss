@@ -3,25 +3,25 @@ Lab1.elf:     file format elf32-avr
 
 Sections:
 Idx Name          Size      VMA       LMA       File off  Algn
-  0 .text         00000158  00000000  00000000  00000054  2**1
+  0 .text         000001cc  00000000  00000000  00000054  2**1
                   CONTENTS, ALLOC, LOAD, READONLY, CODE
-  1 .debug_aranges 00000080  00000000  00000000  000001b0  2**3
+  1 .debug_aranges 00000080  00000000  00000000  00000220  2**3
                   CONTENTS, READONLY, DEBUGGING
-  2 .debug_pubnames 00000064  00000000  00000000  00000230  2**0
+  2 .debug_pubnames 00000064  00000000  00000000  000002a0  2**0
                   CONTENTS, READONLY, DEBUGGING
-  3 .debug_info   00000740  00000000  00000000  00000294  2**0
+  3 .debug_info   0000081e  00000000  00000000  00000304  2**0
                   CONTENTS, READONLY, DEBUGGING
-  4 .debug_abbrev 00000259  00000000  00000000  000009d4  2**0
+  4 .debug_abbrev 0000026a  00000000  00000000  00000b22  2**0
                   CONTENTS, READONLY, DEBUGGING
-  5 .debug_line   00000415  00000000  00000000  00000c2d  2**0
+  5 .debug_line   000004d5  00000000  00000000  00000d8c  2**0
                   CONTENTS, READONLY, DEBUGGING
-  6 .debug_frame  00000060  00000000  00000000  00001044  2**2
+  6 .debug_frame  00000060  00000000  00000000  00001264  2**2
                   CONTENTS, READONLY, DEBUGGING
-  7 .debug_str    00000255  00000000  00000000  000010a4  2**0
+  7 .debug_str    00000255  00000000  00000000  000012c4  2**0
                   CONTENTS, READONLY, DEBUGGING
-  8 .debug_loc    000000a0  00000000  00000000  000012f9  2**0
+  8 .debug_loc    00000150  00000000  00000000  00001519  2**0
                   CONTENTS, READONLY, DEBUGGING
-  9 .debug_ranges 00000090  00000000  00000000  00001399  2**0
+  9 .debug_ranges 00000090  00000000  00000000  00001669  2**0
                   CONTENTS, READONLY, DEBUGGING
 
 Disassembly of section .text:
@@ -173,7 +173,7 @@ Disassembly of section .text:
   f4:	12 e0       	ldi	r17, 0x02	; 2
   f6:	a0 e0       	ldi	r26, 0x00	; 0
   f8:	b2 e0       	ldi	r27, 0x02	; 2
-  fa:	e8 e5       	ldi	r30, 0x58	; 88
+  fa:	ec ec       	ldi	r30, 0xCC	; 204
   fc:	f1 e0       	ldi	r31, 0x01	; 1
   fe:	00 e0       	ldi	r16, 0x00	; 0
  100:	0b bf       	out	0x3b, r16	; 59
@@ -184,88 +184,203 @@ Disassembly of section .text:
  10a:	b1 07       	cpc	r27, r17
  10c:	d9 f7       	brne	.-10     	; 0x104 <__do_copy_data+0x10>
  10e:	02 d0       	rcall	.+4      	; 0x114 <main>
- 110:	21 c0       	rjmp	.+66     	; 0x154 <_exit>
+ 110:	5b c0       	rjmp	.+182    	; 0x1c8 <_exit>
 
 00000112 <__bad_interrupt>:
  112:	76 cf       	rjmp	.-276    	; 0x0 <__vectors>
 
 00000114 <main>:
-#define BLINK_DELAY_MS 10000
 
+#define BLINK_DELAY_MS1 2000
+#define BLINK_DELAY_MS2 5000
+#define BLINK_DELAY_MS3 10000
 void main ()
 {
+ 114:	cf 93       	push	r28
+ 116:	df 93       	push	r29
     /* Set port B pin 7 for output for Arduino Mega yellow LED */
     DDRB |= _BV(DDB7);
- 114:	e4 e2       	ldi	r30, 0x24	; 36
- 116:	f0 e0       	ldi	r31, 0x00	; 0
- 118:	80 81       	ld	r24, Z
- 11a:	80 68       	ori	r24, 0x80	; 128
- 11c:	80 83       	st	Z, r24
-
+ 118:	e4 e2       	ldi	r30, 0x24	; 36
+ 11a:	f0 e0       	ldi	r31, 0x00	; 0
+ 11c:	80 81       	ld	r24, Z
+ 11e:	80 68       	ori	r24, 0x80	; 128
+ 120:	80 83       	st	Z, r24
+    PORTB &= ~_BV(PORTB7);
+ 122:	e5 e2       	ldi	r30, 0x25	; 37
+ 124:	f0 e0       	ldi	r31, 0x00	; 0
+ 126:	80 81       	ld	r24, Z
+ 128:	8f 77       	andi	r24, 0x7F	; 127
+ 12a:	80 83       	st	Z, r24
+    DDRA |= _BV(DDA0);
+ 12c:	e1 e2       	ldi	r30, 0x21	; 33
+ 12e:	f0 e0       	ldi	r31, 0x00	; 0
+ 130:	80 81       	ld	r24, Z
+ 132:	81 60       	ori	r24, 0x01	; 1
+ 134:	80 83       	st	Z, r24
+    DDRA |= _BV(DDA2);
+ 136:	80 81       	ld	r24, Z
+ 138:	84 60       	ori	r24, 0x04	; 4
+ 13a:	80 83       	st	Z, r24
+    DDRA |= _BV(DDA4);
+ 13c:	80 81       	ld	r24, Z
+ 13e:	80 61       	ori	r24, 0x10	; 16
+ 140:	80 83       	st	Z, r24
     while (1) {
         /* Set port B pin 7 high to turn Arduino Mega yellow LED on */
-        PORTB |= _BV(PORTB7);
- 11e:	e5 e2       	ldi	r30, 0x25	; 37
- 120:	f0 e0       	ldi	r31, 0x00	; 0
- 122:	6f ef       	ldi	r22, 0xFF	; 255
- 124:	7f ef       	ldi	r23, 0xFF	; 255
+        
+        PORTA |= _BV(PORTA0);
+ 142:	e2 e2       	ldi	r30, 0x22	; 34
+ 144:	f0 e0       	ldi	r31, 0x00	; 0
+        PORTA &= ~_BV(PORTA2);
+        PORTA &= ~_BV(PORTA4);
+ 146:	60 e2       	ldi	r22, 0x20	; 32
+ 148:	7e e4       	ldi	r23, 0x4E	; 78
     milliseconds can be achieved.
  */
 void
 _delay_loop_2(uint16_t __count)
 {
 	__asm__ volatile (
- 126:	49 e1       	ldi	r20, 0x19	; 25
- 128:	50 e0       	ldi	r21, 0x00	; 0
- 12a:	80 81       	ld	r24, Z
- 12c:	80 68       	ori	r24, 0x80	; 128
- 12e:	80 83       	st	Z, r24
- 130:	9b 01       	movw	r18, r22
- 132:	ca 01       	movw	r24, r20
- 134:	01 97       	sbiw	r24, 0x01	; 1
- 136:	f1 f7       	brne	.-4      	; 0x134 <main+0x20>
+ 14a:	49 e1       	ldi	r20, 0x19	; 25
+ 14c:	50 e0       	ldi	r21, 0x00	; 0
+        _delay_ms(BLINK_DELAY_MS1);
+        PORTA &= ~_BV(PORTA0);
+        _delay_ms(BLINK_DELAY_MS1);
+        PORTA |= _BV(PORTA2);
+ 14e:	a0 e5       	ldi	r26, 0x50	; 80
+ 150:	b3 ec       	ldi	r27, 0xC3	; 195
+        _delay_ms(BLINK_DELAY_MS2);
+        PORTA &= ~_BV(PORTA2);
+        PORTA |= _BV(PORTA4);
+ 152:	cf ef       	ldi	r28, 0xFF	; 255
+ 154:	df ef       	ldi	r29, 0xFF	; 255
+    DDRA |= _BV(DDA2);
+    DDRA |= _BV(DDA4);
+    while (1) {
+        /* Set port B pin 7 high to turn Arduino Mega yellow LED on */
+        
+        PORTA |= _BV(PORTA0);
+ 156:	80 81       	ld	r24, Z
+ 158:	81 60       	ori	r24, 0x01	; 1
+ 15a:	80 83       	st	Z, r24
+        PORTA &= ~_BV(PORTA2);
+ 15c:	80 81       	ld	r24, Z
+ 15e:	8b 7f       	andi	r24, 0xFB	; 251
+ 160:	80 83       	st	Z, r24
+        PORTA &= ~_BV(PORTA4);
+ 162:	80 81       	ld	r24, Z
+ 164:	8f 7e       	andi	r24, 0xEF	; 239
+ 166:	80 83       	st	Z, r24
+ 168:	9b 01       	movw	r18, r22
+ 16a:	ca 01       	movw	r24, r20
+ 16c:	01 97       	sbiw	r24, 0x01	; 1
+ 16e:	f1 f7       	brne	.-4      	; 0x16c <main+0x58>
 		__ticks = (uint16_t) (__ms * 10.0);
 		while(__ticks)
 		{
 			// wait 1/10 ms
 			_delay_loop_2(((F_CPU) / 4e3) / 10);
 			__ticks --;
- 138:	21 50       	subi	r18, 0x01	; 1
- 13a:	30 40       	sbci	r19, 0x00	; 0
+ 170:	21 50       	subi	r18, 0x01	; 1
+ 172:	30 40       	sbci	r19, 0x00	; 0
 		__ticks = 1;
 	else if (__tmp > 65535)
 	{
 		//	__ticks = requested delay in 1/10 ms
 		__ticks = (uint16_t) (__ms * 10.0);
 		while(__ticks)
- 13c:	d1 f7       	brne	.-12     	; 0x132 <main+0x1e>
-        _delay_ms(BLINK_DELAY_MS);
-        /* Set port B pin 7 high to turn Arduino Mega yellow LED off */
-        PORTB &= ~_BV(PORTB7);
- 13e:	80 81       	ld	r24, Z
- 140:	8f 77       	andi	r24, 0x7F	; 127
- 142:	80 83       	st	Z, r24
- 144:	9b 01       	movw	r18, r22
- 146:	ca 01       	movw	r24, r20
- 148:	01 97       	sbiw	r24, 0x01	; 1
- 14a:	f1 f7       	brne	.-4      	; 0x148 <main+0x34>
+ 174:	d1 f7       	brne	.-12     	; 0x16a <main+0x56>
+        _delay_ms(BLINK_DELAY_MS1);
+        PORTA &= ~_BV(PORTA0);
+ 176:	80 81       	ld	r24, Z
+ 178:	8e 7f       	andi	r24, 0xFE	; 254
+ 17a:	80 83       	st	Z, r24
+ 17c:	9b 01       	movw	r18, r22
+ 17e:	ca 01       	movw	r24, r20
+ 180:	01 97       	sbiw	r24, 0x01	; 1
+ 182:	f1 f7       	brne	.-4      	; 0x180 <main+0x6c>
 		{
 			// wait 1/10 ms
 			_delay_loop_2(((F_CPU) / 4e3) / 10);
 			__ticks --;
- 14c:	21 50       	subi	r18, 0x01	; 1
- 14e:	30 40       	sbci	r19, 0x00	; 0
+ 184:	21 50       	subi	r18, 0x01	; 1
+ 186:	30 40       	sbci	r19, 0x00	; 0
 		__ticks = 1;
 	else if (__tmp > 65535)
 	{
 		//	__ticks = requested delay in 1/10 ms
 		__ticks = (uint16_t) (__ms * 10.0);
 		while(__ticks)
- 150:	d1 f7       	brne	.-12     	; 0x146 <main+0x32>
- 152:	eb cf       	rjmp	.-42     	; 0x12a <main+0x16>
+ 188:	d1 f7       	brne	.-12     	; 0x17e <main+0x6a>
+        _delay_ms(BLINK_DELAY_MS1);
+        PORTA |= _BV(PORTA2);
+ 18a:	80 81       	ld	r24, Z
+ 18c:	84 60       	ori	r24, 0x04	; 4
+ 18e:	80 83       	st	Z, r24
+ 190:	9d 01       	movw	r18, r26
+ 192:	ca 01       	movw	r24, r20
+ 194:	01 97       	sbiw	r24, 0x01	; 1
+ 196:	f1 f7       	brne	.-4      	; 0x194 <main+0x80>
+		{
+			// wait 1/10 ms
+			_delay_loop_2(((F_CPU) / 4e3) / 10);
+			__ticks --;
+ 198:	21 50       	subi	r18, 0x01	; 1
+ 19a:	30 40       	sbci	r19, 0x00	; 0
+		__ticks = 1;
+	else if (__tmp > 65535)
+	{
+		//	__ticks = requested delay in 1/10 ms
+		__ticks = (uint16_t) (__ms * 10.0);
+		while(__ticks)
+ 19c:	d1 f7       	brne	.-12     	; 0x192 <main+0x7e>
+        _delay_ms(BLINK_DELAY_MS2);
+        PORTA &= ~_BV(PORTA2);
+ 19e:	80 81       	ld	r24, Z
+ 1a0:	8b 7f       	andi	r24, 0xFB	; 251
+ 1a2:	80 83       	st	Z, r24
+        PORTA |= _BV(PORTA4);
+ 1a4:	80 81       	ld	r24, Z
+ 1a6:	80 61       	ori	r24, 0x10	; 16
+ 1a8:	80 83       	st	Z, r24
+ 1aa:	9e 01       	movw	r18, r28
+ 1ac:	ca 01       	movw	r24, r20
+ 1ae:	01 97       	sbiw	r24, 0x01	; 1
+ 1b0:	f1 f7       	brne	.-4      	; 0x1ae <main+0x9a>
+		{
+			// wait 1/10 ms
+			_delay_loop_2(((F_CPU) / 4e3) / 10);
+			__ticks --;
+ 1b2:	21 50       	subi	r18, 0x01	; 1
+ 1b4:	30 40       	sbci	r19, 0x00	; 0
+		__ticks = 1;
+	else if (__tmp > 65535)
+	{
+		//	__ticks = requested delay in 1/10 ms
+		__ticks = (uint16_t) (__ms * 10.0);
+		while(__ticks)
+ 1b6:	d1 f7       	brne	.-12     	; 0x1ac <main+0x98>
+ 1b8:	9b 01       	movw	r18, r22
+ 1ba:	ca 01       	movw	r24, r20
+ 1bc:	01 97       	sbiw	r24, 0x01	; 1
+ 1be:	f1 f7       	brne	.-4      	; 0x1bc <main+0xa8>
+		{
+			// wait 1/10 ms
+			_delay_loop_2(((F_CPU) / 4e3) / 10);
+			__ticks --;
+ 1c0:	21 50       	subi	r18, 0x01	; 1
+ 1c2:	30 40       	sbci	r19, 0x00	; 0
+		__ticks = 1;
+	else if (__tmp > 65535)
+	{
+		//	__ticks = requested delay in 1/10 ms
+		__ticks = (uint16_t) (__ms * 10.0);
+		while(__ticks)
+ 1c4:	d1 f7       	brne	.-12     	; 0x1ba <main+0xa6>
+ 1c6:	c7 cf       	rjmp	.-114    	; 0x156 <main+0x42>
 
-00000154 <_exit>:
- 154:	f8 94       	cli
+000001c8 <_exit>:
+ 1c8:	f8 94       	cli
 
-00000156 <__stop_program>:
- 156:	ff cf       	rjmp	.-2      	; 0x156 <__stop_program>
+000001ca <__stop_program>:
+ 1ca:	ff cf       	rjmp	.-2      	; 0x1ca <__stop_program>
